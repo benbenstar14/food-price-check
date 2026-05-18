@@ -273,20 +273,37 @@ const sort = document.querySelector("#sort");
 const dialog = document.querySelector("#detailDialog");
 const closeDialog = document.querySelector("#closeDialog");
 
+const shopperUnits = {
+  cabbage: { label: "円/kg（約1玉）", grams: 1000, decimals: 0 },
+  lettuce: { label: "円/玉（目安）", grams: 400, decimals: 0 },
+  negi: { label: "円/本（目安）", grams: 100, decimals: 0 },
+  cucumber: { label: "円/本（目安）", grams: 100, decimals: 0 },
+  onion: { label: "円/玉（目安）", grams: 200, decimals: 0 },
+  tomato: { label: "円/個（目安）", grams: 150, decimals: 0 },
+  carrot: { label: "円/本（目安）", grams: 150, decimals: 0 },
+  potato: { label: "円/個（目安）", grams: 150, decimals: 0 }
+};
+
 function latest(food) {
   return food.history[food.history.length - 1];
 }
 
 function displayPrice(food, value = latest(food)) {
-  if (food.id === "cabbage") return value.toLocaleString();
-  return food.category === "vegetable"
-    ? (value / 1000).toFixed(1)
-    : value.toLocaleString();
+  const shopperUnit = shopperUnits[food.id];
+  if (shopperUnit) {
+    const price = value * (shopperUnit.grams / 1000);
+    return shopperUnit.decimals === 0 ? Math.round(price).toLocaleString() : price.toFixed(shopperUnit.decimals);
+  }
+  return food.category === "vegetable" ? value.toLocaleString() : value.toLocaleString();
 }
 
 function displayUnit(food) {
-  if (food.id === "cabbage") return "円/kg（約1玉）";
-  return food.category === "vegetable" ? "円/g" : food.unit;
+  return shopperUnits[food.id]?.label || food.unit;
+}
+
+function officialPriceText(food, value = latest(food)) {
+  if (food.category === "vegetable") return `公式単価: ${value.toLocaleString()} 円/kg`;
+  return `公式単価: ${value.toLocaleString()} ${food.unit}`;
 }
 
 function pctChange(current, previous) {
@@ -347,6 +364,7 @@ function renderCards() {
           </div>
         </div>
         <div class="price">${displayPrice(food, stats.current)}<small>${displayUnit(food)}</small></div>
+        <p class="official-unit">${officialPriceText(food, stats.current)}</p>
         <div class="decision-card ${stats.decision}">
           <span>${decisionText(stats.decision)}</span>
           <small>${decisionReason(stats)}</small>
@@ -413,6 +431,7 @@ function renderTopPicks() {
       <span class="rank">No.${index + 1}</span>
       <h3>${item.food.name}</h3>
       <strong>${displayPrice(item.food, item.stats.current)}<small>${displayUnit(item.food)}</small></strong>
+      <em>${officialPriceText(item.food, item.stats.current)}</em>
       <p>${decisionReason(item.stats)}</p>
       <button class="text-button" type="button" data-detail="${item.food.id}">詳細を見る</button>
     </article>
@@ -424,10 +443,9 @@ function renderTopPicks() {
 }
 
 function chartValues(food) {
-  if (food.id === "cabbage") return food.history;
-  return food.category === "vegetable"
-    ? food.history.map((value) => value / 1000)
-    : food.history;
+  const shopperUnit = shopperUnits[food.id];
+  if (shopperUnit) return food.history.map((value) => value * (shopperUnit.grams / 1000));
+  return food.history;
 }
 
 function drawLine(canvas, values, color, compact = false, unit = "円") {
@@ -511,7 +529,7 @@ function openDetail(id) {
   document.querySelector("#detailWeek").textContent = signedPercent(stats.week);
   document.querySelector("#detailMonth").previousElementSibling.textContent = secondaryComparisonLabel(food);
   document.querySelector("#detailMonth").textContent = signedPercent(secondaryComparisonValue(food, stats));
-  document.querySelector("#detailComment").textContent = `${food.sourceDate}の公式公表値。${food.comment}`;
+  document.querySelector("#detailComment").textContent = `${food.sourceDate}の公式公表値。${officialPriceText(food, stats.current)}。${food.comment}`;
   document.querySelector("#detailDecision").style.background = stats.decision === "wait" ? "#faece8" : stats.decision === "neutral" ? "#fbf3dd" : "#e9f5ee";
   document.querySelector("#detailDecision").style.color = stats.decision === "wait" ? "#bf4f43" : stats.decision === "neutral" ? "#b48120" : "#2f7d57";
 

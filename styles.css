@@ -205,6 +205,7 @@ select {
 }
 
 .card-meta,
+.official-unit,
 .source-note p,
 .comment {
   color: var(--muted);
@@ -289,6 +290,12 @@ select {
   font-size: 14px;
 }
 
+.top-pick em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
 .top-pick p {
   margin: 0;
   color: var(--muted);
@@ -343,6 +350,11 @@ select {
 .price small {
   font-size: 15px;
   color: var(--muted);
+}
+
+.official-unit {
+  margin: -6px 0 12px;
+  font-size: 12px;
 }
 
 .badges {
@@ -684,6 +696,10 @@ canvas {
   .top-pick p {
     grid-column: 2 / 4;
     font-size: 12px;
+  }
+
+  .top-pick em {
+    grid-column: 2 / 4;
   }
 
   .top-pick .text-button {
