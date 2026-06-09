@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://wajayo0824-tech.github.io/food-price-check/sitemap.xml
+Sitemap: https://benbenstar14.github.io/food-price-check/sitemap.xml

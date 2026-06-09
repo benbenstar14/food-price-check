@@ -757,7 +757,7 @@ document.querySelector("#feedbackForm").addEventListener("submit", (event) => {
     "",
     `閲覧ページ: ${window.location.href}`
   ].join("\n");
-  const issueUrl = new URL("https://github.com/wajayo0824-tech/food-price-check/issues/new");
+  const issueUrl = new URL("https://github.com/benbenstar14/food-price-check/issues/new");
   issueUrl.searchParams.set("title", title);
   issueUrl.searchParams.set("body", body);
   window.open(issueUrl.toString(), "_blank", "noopener,noreferrer");
